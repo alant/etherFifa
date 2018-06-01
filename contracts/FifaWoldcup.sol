@@ -42,11 +42,14 @@ contract FifaWorldCup is DateTime, Ownable{
   function getGameCount() public view returns (uint16) {
     return gameCount;
   }
-  function setStartTime(uint16 _gameId, uint _startTime) public onlyOwner {
-    games[_gameId].startTime = _startTime;
+  function getName(uint16 _gameId) public view returns (string) {
+    return games[_gameId].name;
   }
   function getStartTime(uint16 _gameId) public view returns (uint) {
     return games[_gameId].startTime;
+  }
+  function setStartTime(uint16 _gameId, uint _startTime) public onlyOwner {
+    games[_gameId].startTime = _startTime;
   }
   function getWinVote(uint16 _gameId) public view returns (uint) {
     return games[_gameId].win;

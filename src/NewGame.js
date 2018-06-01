@@ -99,7 +99,7 @@ class NewGame extends Component {
         <Input value={this.state.gameName}
           onChange={this.gameNameHandler.bind(this)}
           type="text" className="gameNameInput" />
-        <Label> Game start time UTC </Label>
+        <Label> Game start local time</Label>
         <DatePicker
           selected={this.state.startDate}
           onChange={this.handleChange}

@@ -15,6 +15,7 @@ import {
 } from 'reactstrap';
 import { Route } from 'react-router-dom'
 import NewGame from './NewGame'
+import GameBoard from './GameBoard'
 
 import './App.css'
 
@@ -25,6 +26,7 @@ class App extends Component {
       isOpen: false,
       storageValue: 0,
       web3: null,
+      web3Avail: true,
       fifaContract: null,
       gameCount: 0
      }
@@ -53,6 +55,7 @@ class App extends Component {
       })
       .catch(() => {
         console.log('Error finding web3.')
+        this.setState({web3Avail: false})
       })
   }
 
@@ -91,14 +94,14 @@ class App extends Component {
                 You need metamask to play this game.
               </Alert>
             )}
-          <h2> FiFa worldcup. Win Eth by voting on the results of games.</h2>
+          <GameBoard />
         </div>
       );
     }
     const MyHome = (props) => {
       return (
         <Home
-          extensionAvail={this.state.web3}
+          extensionAvail={this.state.web3Avail}
           {...props}
         />
       );
