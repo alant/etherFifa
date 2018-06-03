@@ -14,8 +14,9 @@ import {
   Alert
 } from 'reactstrap';
 import { Route } from 'react-router-dom'
-import NewGame from './NewGame'
 import GameBoard from './GameBoard'
+import Admin from './Admin'
+import MyVote from './MyVote'
 
 import './App.css'
 
@@ -29,7 +30,7 @@ class App extends Component {
       web3Avail: true,
       fifaContract: null,
       gameCount: 0
-     }
+    }
 
     this.toggle = this.toggle.bind(this)
   }
@@ -55,7 +56,7 @@ class App extends Component {
       })
       .catch(() => {
         console.log('Error finding web3.')
-        this.setState({web3Avail: false})
+        this.setState({ web3Avail: false })
       })
   }
 
@@ -76,7 +77,7 @@ class App extends Component {
       fifaWorldCup.deployed().then((_instance) => {
         return _instance.getGameCount({ from: accounts[0] })
       }).then((result) => {
-        this.setState({gameCount: result});
+        this.setState({ gameCount: result });
       })
     })
   }
@@ -127,8 +128,17 @@ class App extends Component {
                 {
                   this.state.web3 && (
                     <NavItem>
-                      <NavLink href="/newGame">
-                        new Game
+                      <NavLink href="/admin">
+                        Admin
+                      </NavLink>
+                    </NavItem>
+                  )
+                }
+                {
+                  this.state.web3 && (
+                    <NavItem>
+                      <NavLink href="/myVote">
+                        My Vote
                       </NavLink>
                     </NavItem>
                   )
@@ -144,7 +154,9 @@ class App extends Component {
           <div className="jumbotron" id="myJumbotron">
             <Route exact={true} path="/" render={MyHome} />
             {this.state.web3 && (
-              <Route path="/newGame" component={NewGame} />)}
+              <Route path="/admin" component={Admin} />)}
+            {this.state.web3 && (
+              <Route path="/myVote" component={MyVote} />)}
             <Route path="/about" component={About} />
           </div>
           <footer>

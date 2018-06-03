@@ -118,7 +118,6 @@ class GameBoard extends Component {
     })
   }
   handleClick(i, event) {
-    console.log("div num: " + i + " was clicked")
     this.setState({ gameSelected: i })
     this.toggle()
   }
@@ -126,29 +125,24 @@ class GameBoard extends Component {
     this.setState({ inputVoteSize: event.target.value }, this.calculateProfit.bind(this))
   }
   changeVoteDirection(event) {
-    console.log("vote direction: " + event.target.value)
     this.setState({ directionSelected: event.target.value }, this.calculateProfit.bind(this))
   }
   calculateProfit() {
     var _profit = 0.0
-    console.log("= calcProfilt: stat.direction: " + this.state.directionSelected + " for game: " + this.state.gameSelected)
     var _totalWin = 0.0
-    var _direction = parseInt(this.state.directionSelected)
+    var _direction = parseInt(this.state.directionSelected, 10)
     switch (_direction) {
       case 1:
         _totalWin = parseFloat(this.state.games[this.state.gameSelected].draw) + parseFloat(this.state.games[this.state.gameSelected].lose)
         _profit = _totalWin * parseFloat(this.state.inputVoteSize) / (parseFloat(this.state.inputVoteSize) + parseFloat(this.state.games[this.state.gameSelected].win))
-        console.log("== case 1 ==")
         break
       case 2:
         _totalWin = parseFloat(this.state.games[this.state.gameSelected].win) + parseFloat(this.state.games[this.state.gameSelected].lose)
         _profit = _totalWin * parseFloat(this.state.inputVoteSize) / (parseFloat(this.state.inputVoteSize) + parseFloat(this.state.games[this.state.gameSelected].draw))
-        console.log("case 2")
         break
       case 3:
         _totalWin = parseFloat(this.state.games[this.state.gameSelected].win) + parseFloat(this.state.games[this.state.gameSelected].draw)
         _profit = _totalWin * parseFloat(this.state.inputVoteSize) / (parseFloat(this.state.inputVoteSize) + parseFloat(this.state.games[this.state.gameSelected].lose))
-        console.log("case 3")
         break
       default:
         _profit = 0

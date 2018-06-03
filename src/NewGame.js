@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 import {
   Label,
   Input,
-  Button
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter
 } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
@@ -13,15 +17,15 @@ import styled from 'styled-components';
 import 'react-datepicker/dist/react-datepicker.css';
 
 class NewGame extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
       teamA: "",
       teamB: "",
       startDate: moment(),
       web3: null,
       fifaContract: null,
-      timeStamp: 0
+      timeStamp: 0,
     }
     this.handleChange = this.handleChange.bind(this);
   }
@@ -64,7 +68,6 @@ class NewGame extends Component {
       })
     })
   }
-
   handleChange(date) {
     this.setState({
       startDate: date
@@ -117,27 +120,36 @@ class NewGame extends Component {
 
     return (
       <div className='new-game'>
-        <Label> Teams: </Label>
-        <Input value={this.state.teamA}
-          onChange={this.teamAHandler.bind(this)}
-          type="text" className="gameNameInput" />
-        {" "} VS {" "}
-        <Input value={this.state.teamB}
-          onChange={this.teamBHandler.bind(this)}
-          type="text" className="gameNameInput" />
-        <Label> Game start local time</Label>
-        <FixDatePickerTimer>
-          <DatePicker
-            selected={this.state.startDate}
-            onChange={this.handleChange}
-            showTimeSelect
-            timeFormat="HH:mm"
-            timeIntervals={30}
-            dateFormat="LLL"
-            timeCaption="time"
-          />
-        </FixDatePickerTimer>
-        <Button onClick={this.newGameHandler.bind(this)}> Submit</Button>
+        <Modal isOpen={this.props.open} toggle={this.props.toggle} className={this.props.className}>
+          <ModalHeader toggle={this.props.toggle}>New Game</ModalHeader>
+          <ModalBody>
+            <Label> Teams: </Label>
+            <Input value={this.state.teamA}
+              onChange={this.teamAHandler.bind(this)}
+              type="text" className="gameNameInput" />
+            {" "} VS {" "}
+            <Input value={this.state.teamB}
+              onChange={this.teamBHandler.bind(this)}
+              type="text" className="gameNameInput" />
+            <Label> Game start local time</Label>
+            <FixDatePickerTimer>
+              <DatePicker
+                selected={this.state.startDate}
+                onChange={this.handleChange}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={30}
+                dateFormat="LLL"
+                timeCaption="time"
+              />
+            </FixDatePickerTimer>
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={this.newGameHandler.bind(this)}> Submit</Button>{' '}
+            <Button color="secondary" onClick={this.props.toggle}>Cancel</Button>
+          </ModalFooter>
+        </Modal>
+
       </div>
     );
   }
