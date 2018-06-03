@@ -133,7 +133,8 @@ class GameBoard extends Component {
     var _profit = 0.0
     console.log("= calcProfilt: stat.direction: " + this.state.directionSelected + " for game: " + this.state.gameSelected)
     var _totalWin = 0.0
-    switch (this.state.directionSelected) {
+    var _direction = parseInt(this.state.directionSelected)
+    switch (_direction) {
       case 1:
         _totalWin = parseFloat(this.state.games[this.state.gameSelected].draw) + parseFloat(this.state.games[this.state.gameSelected].lose)
         _profit = _totalWin * parseFloat(this.state.inputVoteSize) / (parseFloat(this.state.inputVoteSize) + parseFloat(this.state.games[this.state.gameSelected].win))
