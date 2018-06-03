@@ -14,7 +14,8 @@ contract FifaWorldCup is DateTime, Ownable{
     uint8 vote;
   }
   struct Game {
-    string name;
+    string teamA;
+    string teamB;
     uint startTime;
     uint32 voteCount; 
     uint256 win;
@@ -42,8 +43,11 @@ contract FifaWorldCup is DateTime, Ownable{
   function getGameCount() public view returns (uint16) {
     return gameCount;
   }
-  function getName(uint16 _gameId) public view returns (string) {
-    return games[_gameId].name;
+  function getTeamA(uint16 _gameId) public view returns (string) {
+    return games[_gameId].teamA;
+  }
+  function getTeamB(uint16 _gameId) public view returns (string) {
+    return games[_gameId].teamB;
   }
   function getStartTime(uint16 _gameId) public view returns (uint) {
     return games[_gameId].startTime;
@@ -64,13 +68,14 @@ contract FifaWorldCup is DateTime, Ownable{
     games[_gameId].result = _result;
   }
 
-  function addGame(string _name, uint _startTime) public onlyOwner {
-    games[gameCount].name = _name;
+  function addGame(string _teamA, string _teamB, uint _startTime) public onlyOwner {
+    games[gameCount].teamA = _teamA;
+    games[gameCount].teamB = _teamB;
     games[gameCount].startTime = _startTime;
     gameCount++;
   }
 
-  function castVote(uint16 _gameId, uint8 _direction) public payable onlyNotFinished(0) {
+  function castVote(uint16 _gameId, uint8 _direction) public payable onlyNotFinished(_gameId) {
     require(_direction > 0 && _direction < 4);
     Game storage game = games[_gameId];
     Vote storage myVote = game.votes[msg.sender];

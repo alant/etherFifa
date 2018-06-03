@@ -8,6 +8,7 @@ import DatePicker from 'react-datepicker';
 import moment from 'moment';
 import FifaWorldCupContract from '../build/contracts/FifaWorldCup.json'
 import getWeb3 from './utils/getWeb3'
+import styled from 'styled-components';
 
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -15,7 +16,8 @@ class NewGame extends Component {
   constructor() {
     super();
     this.state = {
-      gameName: "",
+      teamA: "",
+      teamB: "",
       startDate: moment(),
       web3: null,
       fifaContract: null,
@@ -73,8 +75,11 @@ class NewGame extends Component {
     })
     console.log("= date in UTC: " + this.state.timeStamp)
   }
-  gameNameHandler(event) {
-    this.setState({ gameName: event.target.value });
+  teamAHandler(event) {
+    this.setState({ teamA: event.target.value });
+  }
+  teamBHandler(event) {
+    this.setState({ teamB: event.target.value });
   }
 
   newGameHandler() {
@@ -84,7 +89,7 @@ class NewGame extends Component {
     this.state.web3.eth.getAccounts((error, accounts) => {
       this.state.fifaContract.deployed().then((_instance) => {
         contractInstance = _instance
-        return _instance.addGame(this.state.gameName, this.state.timeStamp, { from: accounts[0] })
+        return _instance.addGame(this.state.teamA, this.state.teamB, this.state.timeStamp, { from: accounts[0] })
       }).then(function () {
         return contractInstance.getGameCount({ from: accounts[0] })
       }).then(function (returnValue) {
@@ -93,22 +98,45 @@ class NewGame extends Component {
     })
   }
   render() {
+    const FixDatePickerTimer = styled.span`
+      & .react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list {
+        padding-left: unset;
+        padding-right: unset;
+        width: 100px;
+      }
+      & .react-datepicker__input-container {
+        width:100%;
+      }
+      & .react-datepicker-wrapper {
+        width:100%;
+      }
+      & .react-datepicker {
+        width: 314px;
+      }
+    `;
+
     return (
       <div className='new-game'>
-        <Label> Game title </Label>
-        <Input value={this.state.gameName}
-          onChange={this.gameNameHandler.bind(this)}
+        <Label> Teams: </Label>
+        <Input value={this.state.teamA}
+          onChange={this.teamAHandler.bind(this)}
+          type="text" className="gameNameInput" />
+        {" "} VS {" "}
+        <Input value={this.state.teamB}
+          onChange={this.teamBHandler.bind(this)}
           type="text" className="gameNameInput" />
         <Label> Game start local time</Label>
-        <DatePicker
-          selected={this.state.startDate}
-          onChange={this.handleChange}
-          showTimeSelect
-          timeFormat="HH:mm"
-          timeIntervals={60}
-          dateFormat="LLL"
-          timeCaption="time"
-        />
+        <FixDatePickerTimer>
+          <DatePicker
+            selected={this.state.startDate}
+            onChange={this.handleChange}
+            showTimeSelect
+            timeFormat="HH:mm"
+            timeIntervals={30}
+            dateFormat="LLL"
+            timeCaption="time"
+          />
+        </FixDatePickerTimer>
         <Button onClick={this.newGameHandler.bind(this)}> Submit</Button>
       </div>
     );
