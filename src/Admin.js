@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import {
   Button
 } from 'reactstrap';
-import NewGame from "./NewGame.js"
+import NewGame from './NewGame'
+import GameBoard from './GameBoard'
 
 class Admin extends Component {
-  constructor() {
-    super()
+  constructor(props) {
+    super(props)
     this.state = {
       showModal: false
     }
@@ -19,6 +20,7 @@ class Admin extends Component {
       <div>
         <Button color="danger" onClick={this.toggle.bind(this)}>New Game</Button>
         <NewGame open={this.state.showModal} toggle={this.toggle.bind(this)} />
+        <GameBoard fetchInProgress={this.props.fetchInProgress} games={this.props.games} mode="admin" />
       </div>
     )
   }

@@ -10,13 +10,12 @@ import {
   NavItem,
   NavLink,
   Row,
-  Col,
-  Alert
+  Col
 } from 'reactstrap';
 import { Route } from 'react-router-dom'
-import GameBoard from './GameBoard'
 import Admin from './Admin'
 import MyVote from './MyVote'
+import Home from './Home'
 
 import './App.css'
 
@@ -29,9 +28,10 @@ class App extends Component {
       web3: null,
       web3Avail: true,
       fifaContract: null,
-      gameCount: 0
+      gameCount: 0,
+      games: [],
+      fetchInProgress: true
     }
-
     this.toggle = this.toggle.bind(this)
   }
 
@@ -50,7 +50,6 @@ class App extends Component {
         this.setState({
           web3: results.web3
         })
-
         // Instantiate contract once web3 provided.
         this.instantiateContract()
       })
@@ -80,33 +79,80 @@ class App extends Component {
         this.setState({ gameCount: result });
       })
     })
+    let contractInstance
+    var promises = []
+    this.state.web3.eth.getAccounts((error, accounts) => {
+      fifaWorldCup.deployed().then((_instance) => {
+        contractInstance = _instance;
+        return _instance.getGameCount({ from: accounts[0] })
+      }).then((result) => {
+        // console.log("= GameBoard: getGameCount: " + result);
+        this.setState({ gameCount: result })
+        for (let i = 0; i < result; i++) {
+          var innerRequests = [
+            contractInstance.getTeamA(i, { from: accounts[0] }),
+            contractInstance.getTeamB(i, { from: accounts[0] }),
+            contractInstance.getStartTime(i, { from: accounts[0] }),
+            contractInstance.getWinVote(i, { from: accounts[0] }),
+            contractInstance.getDrawVote(i, { from: accounts[0] }),
+            contractInstance.getLoseVote(i, { from: accounts[0] })
+          ]
+          promises.push(Promise.all(innerRequests))
+        }
+        Promise.all(promises).then((innerPromise) => {
+          Promise.all(innerPromise).then((result) => {
+            // console.log(result)
+            result.forEach((_game) => {
+              console.log("== game: " + _game)
+              var game = {
+                teamA: _game[0],
+                teamB: _game[1],
+                startTime: _game[2],
+                win: this.state.web3.fromWei(_game[3], 'ether'),
+                draw: this.state.web3.fromWei(_game[4], 'ether'),
+                lose: this.state.web3.fromWei(_game[5], 'ether')
+              }
+              this.state.games.push(game)
+            })
+            this.setState({ fetchInProgress: false })
+          })
+        })
+      })
+    })
   }
 
   render() {
-
-    /* Home component */
-    const Home = function (props) {
-      console.log("====home prop extension avail:" + props.extensionAvail);
-      return (
-        <div>
-          {
-            !props.extensionAvail && (
-              <Alert color="warning">
-                You need metamask to play this game.
-              </Alert>
-            )}
-          <GameBoard />
-        </div>
-      );
-    }
-    const MyHome = (props) => {
+    const MyHomePage = (props) => {
       return (
         <Home
           extensionAvail={this.state.web3Avail}
+          fetchInProgress={this.state.fetchInProgress}
+          games={this.state.games}
           {...props}
         />
       );
     }
+    const MyAdmin = (props) => {
+      return (
+        <Admin
+          extensionAvail={this.state.web3Avail}
+          fetchInProgress={this.state.fetchInProgress}
+          games={this.state.games}
+          {...props}
+        />
+      );
+    }
+    const MyMyVote = (props) => {
+      return (
+        <MyVote
+          extensionAvail={this.state.web3Avail}
+          fetchInProgress={this.state.fetchInProgress}
+          games={this.state.games}
+          {...props}
+        />
+      );
+    }
+
 
     /* About component */
     const About = () => (
@@ -152,11 +198,11 @@ class App extends Component {
             </Collapse>
           </Navbar>
           <div className="jumbotron" id="myJumbotron">
-            <Route exact={true} path="/" render={MyHome} />
+            <Route exact={true} path="/" render={MyHomePage} />
             {this.state.web3 && (
-              <Route path="/admin" component={Admin} />)}
+              <Route path="/admin" render={MyAdmin} />)}
             {this.state.web3 && (
-              <Route path="/myVote" component={MyVote} />)}
+              <Route path="/myVote" render={MyMyVote} />)}
             <Route path="/about" component={About} />
           </div>
           <footer>
