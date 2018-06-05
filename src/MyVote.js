@@ -12,7 +12,8 @@ class MyVote extends Component {
       web3: null,
       winnings: null,
       gameCount: 0,
-      fetchInProgress: true
+      fetchInProgress: true,
+      fifaContract: null
     }
   }
   componentWillMount() {
@@ -54,36 +55,50 @@ class MyVote extends Component {
       })
     })
   }
+  withdraw(gameId) {
+    console.log("withdraw from game: " + gameId)
+    this.state.web3.eth.getAccounts((error, accounts) => {
+      this.state.fifaContract.deployed().then((_instance) => {
+        return _instance.withdraw(gameId, { from: accounts[0] })
+      }).then((result) => {
+        console.log("= withdraw: " + JSON.stringify(result))
+      })
+    })
+  } 
   render() {
-    return (
+        return(
       <div>
-        {
-          this.state.fetchInProgress ?
-            <p> Loading from Etherum blockchain network... </p>
-            :
-            <Table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Proceed</th>
-                </tr>
-              </thead>
-              <tbody>
-                {this.state.winnings.map((proceed, i) => {
-                  return (
-                    parseFloat(proceed) ?
-                      <tr key={i}>
-                        <th scope="row">{i}</th>
-                        <td>{parseFloat(proceed)}</td>
-                        <td><Button color="primary">Withdraw</Button></td>
-                      </tr>
-                      :
-                      <tr key={i}/>
-                  )
-                })}
-              </tbody>
-            </Table>
-        }
+      {
+        this.state.fetchInProgress ?
+          <p> Loading from Etherum blockchain network... </p>
+          :
+          <Table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Proceed</th>
+              </tr>
+            </thead>
+            <tbody>
+              {this.state.winnings.map((proceed, i) => {
+                return (
+                  parseFloat(proceed) ?
+                    <tr key={i}>
+                      <th scope="row">{i}</th>
+                      <td>{parseFloat(proceed)}</td>
+                      <td>
+                        <Button color="primary" onClick={this.withdraw.bind(this, i)}>
+                          Withdraw
+                          </Button>
+                      </td>
+                    </tr>
+                    :
+                    <tr key={i} />
+                )
+              })}
+            </tbody>
+          </Table>
+      }
       </div >
     )
   }

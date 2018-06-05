@@ -28,6 +28,7 @@ contract FifaWorldCup is DateTime, Ownable{
   mapping (uint16 => Game) games;
   uint16 gameCount;
   uint delay = 1800;
+  uint256 researchPot;
 
   constructor() public {
     // matchDay = 1528988400;
@@ -66,6 +67,9 @@ contract FifaWorldCup is DateTime, Ownable{
   }
   function setResult(uint16 _gameId, uint8 _result) public onlyOwner {
     games[_gameId].result = _result;
+  }
+  function getResearchPot() public view onlyOwner returns (uint256) {
+    return researchPot;
   }
 
   function addGame(string _teamA, string _teamB, uint _startTime) public onlyOwner {
@@ -120,7 +124,8 @@ contract FifaWorldCup is DateTime, Ownable{
       pot = pot.add(game.draw);
       winning = pot.mul(myVote.deposit.div(game.lose));
     }
-    return winning.add(myVote.deposit);
+    winning = winning.add(myVote.deposit);
+    return winning;
   }
 
   function withdraw(uint16 _gameId) public {
@@ -129,7 +134,10 @@ contract FifaWorldCup is DateTime, Ownable{
     require(game.result != 0);
     require(game.result == myVote.vote);
     myVote.vote = 0;
-    msg.sender.transfer(getWinning(_gameId, msg.sender));
+    uint256 winning = getWinning(_gameId, msg.sender);
+    researchPot = researchPot.add(winning.mul(0.1));
+    winning = winning.mul(0.99);
+    msg.sender.transfer(winning);
   }
   function canWithDraw(uint16 _gameId, address _voter) view public returns(bool) {
     Game storage game = games[_gameId];
@@ -139,7 +147,12 @@ contract FifaWorldCup is DateTime, Ownable{
     }
     return (game.result == myVote.vote);
   }
+  function getPaid(uint256 amount) public onlyOwner {
+    researchPot = researchPot.minus(amount);
+    msg.sender.transfer(amount);
+  }
 }
+
 
 /**
  * @title SafeMath
