@@ -77,6 +77,7 @@ class App extends Component {
         return _instance.getGameCount({ from: accounts[0] })
       }).then((result) => {
         this.setState({ gameCount: result });
+        console.log("= app.js gameCoutn: " + result)
       })
     })
     let contractInstance

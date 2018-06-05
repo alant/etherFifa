@@ -93,11 +93,16 @@ contract FifaWorldCup is DateTime, Ownable{
     }
     games[_gameId].voteCount++;
   }
+  function getDeposit(uint16 _gameId, address _voter) view public returns (uint256) {
+    Game storage game = games[_gameId];
+    Vote storage myVote = game.votes[_voter];
+    return myVote.deposit;
+  }
   function getWinning(uint16 _gameId, address _voter) view public returns (uint256) {
     uint256 winning;
     Game storage game = games[_gameId];
     Vote storage myVote = game.votes[_voter];
-    if (game.result != myVote.vote) {
+    if (game.result == 0 || game.result != myVote.vote) {
       return 0;
     } 
     
@@ -121,27 +126,19 @@ contract FifaWorldCup is DateTime, Ownable{
   function withdraw(uint16 _gameId) public {
     Game storage game = games[_gameId];
     Vote storage myVote = game.votes[msg.sender];
+    require(game.result != 0);
     require(game.result == myVote.vote);
+    myVote.vote = 0;
     msg.sender.transfer(getWinning(_gameId, msg.sender));
   }
-  // function getGameYear() view public returns (uint16){
-  //     return getYear(matchDay);
-  // }
-  // function getGameMonth() view public returns (uint8){
-  //     return getMonth(matchDay);
-  // }
-  // function getGameDay() view public returns (uint8){
-  //     return getDay(matchDay);
-  // }
-  // function getGameHour() view public returns (uint8){
-  //   return getHour(matchDay);
-  // }
-  // function getGameMin() view public returns (uint8){
-  //   return getMinute(matchDay);
-  // }
-  // function getGameSec() view public returns (uint8){
-  //   return getSecond(matchDay);
-  // }
+  function canWithDraw(uint16 _gameId, address _voter) view public returns(bool) {
+    Game storage game = games[_gameId];
+    Vote storage myVote = game.votes[msg.sender];
+    if (game.result == 0) {
+      return false;
+    }
+    return (game.result == myVote.vote);
+  }
 }
 
 /**
