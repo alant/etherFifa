@@ -3,11 +3,6 @@ import { Alert } from "reactstrap";
 import GameBoard from "./GameBoard";
 
 class Home extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-    }
-  }
   componentWillMount() {
     console.log("= home prop extension avail:" + this.props.extensionAvail);
   }

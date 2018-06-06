@@ -16,7 +16,8 @@ import {
   FormGroup,
   Label,
   Input,
-  Col
+  Col,
+  Alert
 } from 'reactstrap';
 
 class GameCards extends Component {
@@ -24,12 +25,18 @@ class GameCards extends Component {
     super(props)
     this.state = {
       gameSelected: 0,
+      modal: false,
       adminModal: false,
       web3: null,
       fifaContract: null,
-      gameResult: 1
+      gameResult: 1,
+      inputVoteSize: 0.1,
+      directionSelected: 0,
+      profit: 0,
+      formWarning: false
     }
     this.adminToggle = this.adminToggle.bind(this);
+    this.toggle = this.toggle.bind(this);
   }
   componentWillMount() {
     // Get network provider and web3 instance.
@@ -69,11 +76,10 @@ class GameCards extends Component {
 
   }
   handleClick(i, event) {
-    console.log("game: " + i + " selected")
     this.setState({ gameSelected: i })
+    this.toggle()
   }
   adminHandler(i, event) {
-    console.log("admin game: " + i + " selected")
     this.setState({ gameSelected: i })
     this.adminToggle()
   }
@@ -83,13 +89,27 @@ class GameCards extends Component {
       gameResult: 1
     })
   }
+  toggle() {
+    this.setState({
+      modal: !this.state.modal,
+      inputVoteSize: 0.1,
+      directionSelected: 0,
+      profit: 0,
+      formWarning: false
+    }, this.calculateProfit())
+  }
+  toggleWarning() {
+    this.setState({ formWarning: true })
+  }
   changeVoteSize(event) {
     this.setState({ inputVoteSize: event.target.value }, this.calculateProfit.bind(this))
   }
   changeVoteDirection(event) {
+    this.setState({ formWarning: false })
     this.setState({ directionSelected: event.target.value }, this.calculateProfit.bind(this))
   }
   calculateProfit() {
+    console.log("= calculating profit: direction:" + this.state.directionSelected + " game: " + this.state.gameSelected + " vote size: " + this.state.inputVoteSize)
     var _profit = 0.0
     var _totalWin = 0.0
     var _direction = parseInt(this.state.directionSelected, 10)
@@ -109,31 +129,36 @@ class GameCards extends Component {
       default:
         _profit = 0
     }
+    console.log("= profit: " + _profit)
     this.setState({ profit: _profit })
   }
   vote() {
-    const contract = require('truffle-contract')
-    const fifaWorldCup = contract(FifaWorldCupContract)
-    fifaWorldCup.setProvider(this.state.web3.currentProvider)
+    if (this.state.directionSelected === 0) {
+      this.toggleWarning()
+    } else {
+      const contract = require('truffle-contract')
+      const fifaWorldCup = contract(FifaWorldCupContract)
+      fifaWorldCup.setProvider(this.state.web3.currentProvider)
 
-    var contractInstance
-    var defaultAccount
-    this.state.web3.eth.getAccounts((error, accounts) => {
-      fifaWorldCup.deployed().then((_instance) => {
-        contractInstance = _instance;
-        defaultAccount = accounts[0]
-        return _instance.canVote(0, { from: defaultAccount })
-      }).then((result) => {
-        if (result === true) {
-          console.log("=== call castVote ===")
-          return contractInstance.castVote(this.state.gameSelected, this.state.directionSelected, { from: defaultAccount, value: this.state.web3.toWei(this.state.inputVoteSize, "ether") })
-        } else {
-          console.log("vote: canVote?: " + result + " type: " + typeof (result))
-        }
-      }).then((result) => {
-        console.log("castVote result: " + JSON.stringify(result))
+      var contractInstance
+      var defaultAccount
+      this.state.web3.eth.getAccounts((error, accounts) => {
+        fifaWorldCup.deployed().then((_instance) => {
+          contractInstance = _instance;
+          defaultAccount = accounts[0]
+          return _instance.canVote(0, { from: defaultAccount })
+        }).then((result) => {
+          if (result === true) {
+            console.log("=== call castVote ===")
+            return contractInstance.castVote(this.state.gameSelected, this.state.directionSelected, { from: defaultAccount, value: this.state.web3.toWei(this.state.inputVoteSize, "ether") })
+          } else {
+            console.log("vote: canVote?: " + result + " type: " + typeof (result))
+          }
+        }).then((result) => {
+          console.log("castVote result: " + JSON.stringify(result))
+        })
       })
-    })
+    }
   }
   setGameResult(event) {
     this.setState({ gameResult: event.target.value })
@@ -198,7 +223,7 @@ class GameCards extends Component {
             <ModalBody>
               <FormGroup>
                 <Label for="winnerSelect">Who Won?</Label>
-                <Input type="select" name="select" id="winnerSelect" onChange={this.setGameResult.bind(this)} defaultValue={1}>
+                <Input type="select" name="select" id="winnerSelect" onChange={this.setGameResult.bind(this)}>
                   <option value={1}>{this.props.games[this.state.gameSelected].teamA}</option>
                   <option value={2}> Draw </option>
                   <option value={3}>{this.props.games[this.state.gameSelected].teamB}</option>
@@ -216,12 +241,13 @@ class GameCards extends Component {
             <ModalHeader toggle={this.toggle}>{this.props.games[this.state.gameSelected].teamA} VS {this.props.games[this.state.gameSelected].teamB}</ModalHeader>
             <ModalBody>
               <FormGroup tag="fieldset" onChange={this.changeVoteDirection.bind(this)}>
-                <legend>Voting for:</legend>
+                <legend>Predict winning team is:</legend>
+                {this.state.formWarning && (<Alert color="warning"> pick a team below </Alert>)}
                 <FormGroup check>
                   <Label check>
-                    <Input type="radio" value={1} name="direction" defaultChecked="checked" />{' '}
-                    Win
-                      </Label>
+                    <Input type="radio" value={1} name="direction" />{' '}
+                    {this.props.games[this.state.gameSelected].teamA}
+                  </Label>
                 </FormGroup>
                 <FormGroup check>
                   <Label check>
@@ -232,12 +258,12 @@ class GameCards extends Component {
                 <FormGroup check>
                   <Label check>
                     <Input type="radio" value={3} name="direction" />{' '}
-                    Lose
-                      </Label>
+                    {this.props.games[this.state.gameSelected].teamB}
+                  </Label>
                 </FormGroup>
               </FormGroup>
               <FormGroup>
-                <Label for="exampleNumber">Vote size:</Label>
+                <Label for="exampleNumber">Vote size in Eth:</Label>
                 <Row>
                   <Col xs="3">
                     <Input type="number" onChange={this.changeVoteSize.bind(this)} value={this.state.inputVoteSize} placeholder={this.state.inputVoteSize} />
