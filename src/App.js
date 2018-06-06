@@ -30,7 +30,8 @@ class App extends Component {
       fifaContract: null,
       gameCount: 0,
       games: [],
-      fetchInProgress: true
+      fetchInProgress: true,
+      isAdmin: false
     }
     this.toggle = this.toggle.bind(this)
   }
@@ -60,12 +61,9 @@ class App extends Component {
   }
 
   instantiateContract() {
-    /*
-     * SMART CONTRACT EXAMPLE
-     *
-     * Normally these functions would be called in the context of a
-     * state management library, but for convenience I've placed them here.
-     */
+    const adminAccounts = [
+      '0x627306090abab3a6e1400e9345bc60c78a8bef57'
+    ]
 
     const contract = require('truffle-contract')
     const fifaWorldCup = contract(FifaWorldCupContract)
@@ -77,6 +75,12 @@ class App extends Component {
         return _instance.getGameCount({ from: accounts[0] })
       }).then((result) => {
         this.setState({ gameCount: result });
+        var account = accounts[0]
+        console.log("account[0]: " + account + "type: " + typeof(account))
+        if (adminAccounts.includes(account)) {
+          console.log("== ! setting isAdmin true ! ==")
+          this.setState({isAdmin: true})
+        }
         console.log("= app.js gameCoutn: " + result)
       })
     })
@@ -173,7 +177,7 @@ class App extends Component {
             <Collapse isOpen={this.state.isOpen} navbar>
               <Nav className="ml-auto" navbar>
                 {
-                  this.state.web3 && (
+                  this.state.web3 && this.state.isAdmin && (
                     <NavItem>
                       <NavLink href="/admin">
                         Admin
@@ -200,7 +204,7 @@ class App extends Component {
           </Navbar>
           <div className="jumbotron" id="myJumbotron">
             <Route exact={true} path="/" render={MyHomePage} />
-            {this.state.web3 && (
+            {this.state.web3 && this.state.isAdmin && (
               <Route path="/admin" render={MyAdmin} />)}
             {this.state.web3 && (
               <Route path="/myVote" render={MyMyVote} />)}
