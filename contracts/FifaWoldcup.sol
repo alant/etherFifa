@@ -27,7 +27,7 @@ contract FifaWorldCup is DateTime, Ownable{
 
   mapping (uint16 => Game) games;
   uint16 gameCount;
-  uint delay = 1800;
+  uint delay = 0;
   uint256 researchPot;
 
   constructor() public {

@@ -19,6 +19,11 @@ import {
   Col,
   Alert
 } from 'reactstrap';
+import DatePicker from 'react-datepicker';
+import styled from 'styled-components';
+import moment from 'moment';
+
+import 'react-datepicker/dist/react-datepicker.css';
 
 class GameCards extends Component {
   constructor(props) {
@@ -33,10 +38,12 @@ class GameCards extends Component {
       inputVoteSize: 0.1,
       directionSelected: 0,
       profit: 0,
-      formWarning: false
+      formWarning: false,
+      gameTime: 0
     }
     this.adminToggle = this.adminToggle.bind(this);
     this.toggle = this.toggle.bind(this);
+    this.handleGameTimeChange = this.handleGameTimeChange.bind(this);
   }
   componentWillMount() {
     // Get network provider and web3 instance.
@@ -67,10 +74,6 @@ class GameCards extends Component {
     const contract = require('truffle-contract')
     const fifaWorldCup = contract(FifaWorldCupContract)
     fifaWorldCup.setProvider(this.state.web3.currentProvider)
-
-    // var contractInstance
-    // var promises = []
-
     this.setState({ fifaContract: fifaWorldCup })
     // Get accounts.
 
@@ -81,7 +84,18 @@ class GameCards extends Component {
   }
   adminHandler(i, event) {
     this.setState({ gameSelected: i })
+    this.getGameTime()
     this.adminToggle()
+  }
+  getGameTime() {
+    this.state.web3.eth.getAccounts((error, accounts) => {
+      this.state.fifaContract.deployed().then((_instance) => {
+        return _instance.getStartTime(this.state.gameSelected, { from: accounts[0] })
+      }).then((result) => {
+        console.log("= start time return: " + JSON.stringify(result))
+        this.setState({ gameTime: parseInt(result, 10) })
+      })
+    })
   }
   adminToggle() {
     this.setState({
@@ -176,6 +190,21 @@ class GameCards extends Component {
       })
     })
   }
+  handleGameTimeChange(_date) {
+    _date = Math.floor(_date / 1000)
+    this.setState({ gameTime: _date })
+    console.log("handleGameTimeChagne: " + _date)
+  }
+  newGameTime() {
+    console.log("= game " + this.state.gameSelected + " new Time: " + this.state.gameTime)
+    this.state.web3.eth.getAccounts((error, accounts) => {
+      this.state.fifaContract.deployed().then((_instance) => {
+        return _instance.setStartTime(this.state.gameSelected, this.state.gameTime, { from: accounts[0] })
+      }).then((result) => {
+        console.log("=! set new start time return: " + JSON.stringify(result))
+      })
+    })
+  }
   render() {
     function timeConverter(UNIX_timestamp) {
       var a = new Date(UNIX_timestamp * 1000);
@@ -189,6 +218,22 @@ class GameCards extends Component {
       var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec;
       return time;
     }
+    const FixDatePickerTimer = styled.span`
+      & .react-datepicker__time-container .react-datepicker__time .react-datepicker__time-box ul.react-datepicker__time-list {
+        padding-left: unset;
+        padding-right: unset;
+        width: 100px;
+      }
+      & .react-datepicker__input-container {
+        width:100%;
+      }
+      & .react-datepicker-wrapper {
+        width:100%;
+      }
+      & .react-datepicker {
+        width: 314px;
+      }
+    `;
     return (
       <div>
         {this.props.games.map((game, i) => {
@@ -230,6 +275,21 @@ class GameCards extends Component {
                 </Input>
               </FormGroup>
               <Button color="danger" onClick={this.gameOver.bind(this)}>Set!</Button>{' '}
+              <FormGroup>
+                <Label>New game time:</Label>
+                <FixDatePickerTimer>
+                  <DatePicker
+                    selected={moment.unix(this.state.gameTime)}
+                    onChange={this.handleGameTimeChange}
+                    showTimeSelect
+                    timeFormat="HH:mm"
+                    timeIntervals={30}
+                    dateFormat="LLL"
+                    timeCaption="time"
+                  />
+                </FixDatePickerTimer>
+                <Button color="danger" onClick={this.newGameTime.bind(this)}>Set!</Button>{' '}
+              </FormGroup>
             </ModalBody>
             <ModalFooter>
               <Button color="secondary" onClick={this.adminToggle}>Cancel</Button>
