@@ -102,6 +102,11 @@ contract FifaWorldCup is DateTime, Ownable{
     Vote storage myVote = game.votes[_voter];
     return myVote.deposit;
   }
+  function getVote(uint16 _gameId, address _voter) view public returns (uint8) {
+    Game storage game = games[_gameId];
+    Vote storage myVote = game.votes[_voter];
+    return myVote.vote;
+  }
   function getWinning(uint16 _gameId, address _voter) view public returns (uint256) {
     uint256 winning;
     Game storage game = games[_gameId];
@@ -135,11 +140,12 @@ contract FifaWorldCup is DateTime, Ownable{
     require(game.result == myVote.vote);
     myVote.vote = 0;
     uint256 winning = getWinning(_gameId, msg.sender);
-    researchPot = researchPot.add(winning.mul(0.1));
-    winning = winning.mul(0.99);
-    msg.sender.transfer(winning);
+    uint256 winning1Percent = winning.div(100);
+    researchPot = researchPot.add(winning1Percent);
+    uint256 winning99Percent = winning1Percent.mul(99);
+    msg.sender.transfer(winning99Percent);
   }
-  function canWithDraw(uint16 _gameId, address _voter) view public returns(bool) {
+  function canWithDraw(uint16 _gameId) view public returns(bool) {
     Game storage game = games[_gameId];
     Vote storage myVote = game.votes[msg.sender];
     if (game.result == 0) {
@@ -148,7 +154,7 @@ contract FifaWorldCup is DateTime, Ownable{
     return (game.result == myVote.vote);
   }
   function getPaid(uint256 amount) public onlyOwner {
-    researchPot = researchPot.minus(amount);
+    researchPot = researchPot.sub(amount);
     msg.sender.transfer(amount);
   }
 }

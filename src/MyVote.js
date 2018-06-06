@@ -11,6 +11,7 @@ class MyVote extends Component {
     this.state = {
       web3: null,
       winnings: null,
+      deposits: null,
       gameCount: 0,
       fetchInProgress: true,
       fifaContract: null
@@ -35,25 +36,43 @@ class MyVote extends Component {
     this.setState({ fifaContract: fifaWorldCup })
 
     let contractInstance
-    var promises = []
+
     this.state.web3.eth.getAccounts((error, accounts) => {
       fifaWorldCup.deployed().then((_instance) => {
         contractInstance = _instance
         return _instance.getGameCount({ from: accounts[0] })
       }).then((result) => {
+        var promises1 = []
+        var promises2 = []
         this.setState({ gameCount: result });
+        console.log("gamecount: " + result)
         for (let i = 0; i < result; i++) {
-          promises.push(contractInstance.getWinning(i, accounts[0], { from: accounts[0] }))
+          promises1.push(contractInstance.getWinning(i, accounts[0], { from: accounts[0] }))
+          promises2.push(contractInstance.getDeposit(i, accounts[0], { from: accounts[0] }))
         }
-        Promise.all(promises).then((result) => {
+        Promise.all(promises1).then((result) => {
           var valInEther = result.map(valInWei => this.state.web3.fromWei(valInWei, "ether"))
           this.setState({
-            winnings: valInEther,
+            winnings: valInEther
+          })
+        })
+        Promise.all(promises2).then((result) => {
+          console.log("!= getdeposit: " + JSON.stringify(result))
+          var valInEther = result.map(valInWei => this.state.web3.fromWei(valInWei, "ether"))
+          this.setState({
+            deposits: valInEther,
             fetchInProgress: false
           })
         })
+
       })
     })
+    this.state.web3.eth.getAccounts((error, accounts) => {
+      fifaWorldCup.deployed().then((_instance) => {
+
+      })
+    })
+
   }
   withdraw(gameId) {
     console.log("withdraw from game: " + gameId)
@@ -64,44 +83,64 @@ class MyVote extends Component {
         console.log("= withdraw: " + JSON.stringify(result))
       })
     })
-  } 
-  render() {
-        return(
-      <div>
-      {
-        this.state.fetchInProgress ?
-          <p> Loading from Etherum blockchain network... </p>
-          :
-          <Table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Proceed</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.state.winnings.map((proceed, i) => {
-                return (
-                  parseFloat(proceed) ?
-                    <tr key={i}>
-                      <th scope="row">{i}</th>
-                      <td>{parseFloat(proceed)}</td>
-                      <td>
-                        <Button color="primary" onClick={this.withdraw.bind(this, i)}>
-                          Withdraw
-                          </Button>
-                      </td>
-                    </tr>
-                    :
-                    <tr key={i} />
-                )
-              })}
-            </tbody>
-          </Table>
-      }
-      </div >
-    )
   }
-}
-
+  render() {
+    const tableRows = () => {
+      var rows = []
+      console.log("= data: " + this.state.deposits)
+      for (let i = 0; i < this.state.gameCount; i++) {
+        rows.push(
+          parseFloat(this.state.deposits[i]) ?
+            <tr key={i}>
+              <th scope="row">{this.props.games[i].teamA} VS {this.props.games[i].teamB}</th>
+              <td>{parseFloat(this.state.deposits[i])}</td>
+              <td>{parseFloat(this.state.winnings[i])}</td>
+              <td>
+                {
+                  (() => {
+                    if (parseFloat(this.state.winnings[i]) > 0) {
+                      return (
+                        < Button disabled color="primary" onClick={this.withdraw.bind(this, i)}>
+                          Withdraw
+                        </Button>
+                      )
+                    } else {
+                      return (
+                        <span />
+                      )
+                    }
+                  })()
+                }
+              </td>
+            </tr >
+              :
+    <tr key={i} />
+              )
+        }
+            return rows
+          }
+      return (
+  <div>
+                {
+                  this.state.fetchInProgress ?
+                    <p> Loading from Etherum blockchain network... </p>
+                    :
+                    <Table>
+                      <thead>
+                        <tr>
+                          <th>Game</th>
+                          <th>Deposit</th>
+                          <th>Proceed</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tableRows()}
+                      </tbody>
+                    </Table>
+                }
+              </div >
+              )
+                }
+              }
+              
 export default MyVote

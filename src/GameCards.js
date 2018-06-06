@@ -250,9 +250,9 @@ class GameCards extends Component {
                     <CardTitle>{game.teamA} VS {game.teamB}</CardTitle>
                     <CardSubtitle>Start time: {timeConverter(game.startTime)}</CardSubtitle>
                     <CardText>
-                      Win: {JSON.stringify(game.win)} {" "}
-                      Draw: {JSON.stringify(game.draw)} {" "}
-                      Lose: {JSON.stringify(game.lose)}
+                      1: {JSON.stringify(game.win)} {" "}
+                      X: {JSON.stringify(game.draw)} {" "}
+                      2: {JSON.stringify(game.lose)}
                     </CardText>
                   </CardBody>
 
@@ -261,89 +261,90 @@ class GameCards extends Component {
             </div>
           )
         })}
-        {this.props.mode === "admin" ?
-          //admin modal
-          <Modal isOpen={this.state.adminModal} toggle={this.adminToggle} className={this.props.className}>
-            <ModalHeader toggle={this.adminToggle}>{this.props.games[this.state.gameSelected].teamA} VS {this.props.games[this.state.gameSelected].teamB}</ModalHeader>
-            <ModalBody>
-              <FormGroup>
-                <Label for="winnerSelect">Who Won?</Label>
-                <Input type="select" name="select" id="winnerSelect" onChange={this.setGameResult.bind(this)}>
-                  <option value={1}>{this.props.games[this.state.gameSelected].teamA}</option>
-                  <option value={2}> Draw </option>
-                  <option value={3}>{this.props.games[this.state.gameSelected].teamB}</option>
-                </Input>
-              </FormGroup>
-              <Button color="danger" onClick={this.gameOver.bind(this)}>Set!</Button>{' '}
-              <FormGroup>
-                <Label>New game time:</Label>
-                <FixDatePickerTimer>
-                  <DatePicker
-                    selected={moment.unix(this.state.gameTime)}
-                    onChange={this.handleGameTimeChange}
-                    showTimeSelect
-                    timeFormat="HH:mm"
-                    timeIntervals={30}
-                    dateFormat="LLL"
-                    timeCaption="time"
-                  />
-                </FixDatePickerTimer>
-                <Button color="danger" onClick={this.newGameTime.bind(this)}>Set!</Button>{' '}
-              </FormGroup>
-            </ModalBody>
-            <ModalFooter>
-              <Button color="secondary" onClick={this.adminToggle}>Cancel</Button>
-            </ModalFooter>
-          </Modal>
-          :
-          //regular user modal
-          <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
-            <ModalHeader toggle={this.toggle}>{this.props.games[this.state.gameSelected].teamA} VS {this.props.games[this.state.gameSelected].teamB}</ModalHeader>
-            <ModalBody>
-              <FormGroup tag="fieldset" onChange={this.changeVoteDirection.bind(this)}>
-                <legend>Predict winning team is:</legend>
-                {this.state.formWarning && (<Alert color="warning"> pick a team below </Alert>)}
-                <FormGroup check>
-                  <Label check>
-                    <Input type="radio" value={1} name="direction" />{' '}
-                    {this.props.games[this.state.gameSelected].teamA}
-                  </Label>
+        {this.props.games[0] && (
+          this.props.mode === "admin" ?
+            //admin modal
+            <Modal isOpen={this.state.adminModal} toggle={this.adminToggle} className={this.props.className}>
+              <ModalHeader toggle={this.adminToggle}>{this.props.games[this.state.gameSelected].teamA} VS {this.props.games[this.state.gameSelected].teamB}</ModalHeader>
+              <ModalBody>
+                <FormGroup>
+                  <Label for="winnerSelect">Who Won?</Label>
+                  <Input type="select" name="select" id="winnerSelect" onChange={this.setGameResult.bind(this)}>
+                    <option value={1}>{this.props.games[this.state.gameSelected].teamA}</option>
+                    <option value={2}> Draw </option>
+                    <option value={3}>{this.props.games[this.state.gameSelected].teamB}</option>
+                  </Input>
                 </FormGroup>
-                <FormGroup check>
-                  <Label check>
-                    <Input type="radio" value={2} name="direction" />{' '}
-                    Draw
+                <Button color="danger" onClick={this.gameOver.bind(this)}>Set!</Button>{' '}
+                <FormGroup>
+                  <Label>New game time:</Label>
+                  <FixDatePickerTimer>
+                    <DatePicker
+                      selected={moment.unix(this.state.gameTime)}
+                      onChange={this.handleGameTimeChange}
+                      showTimeSelect
+                      timeFormat="HH:mm"
+                      timeIntervals={30}
+                      dateFormat="LLL"
+                      timeCaption="time"
+                    />
+                  </FixDatePickerTimer>
+                  <Button color="danger" onClick={this.newGameTime.bind(this)}>Set!</Button>{' '}
+                </FormGroup>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="secondary" onClick={this.adminToggle}>Cancel</Button>
+              </ModalFooter>
+            </Modal>
+            :
+            //regular user modal
+            <Modal isOpen={this.state.modal} toggle={this.toggle} className={this.props.className}>
+              <ModalHeader toggle={this.toggle}>{this.props.games[this.state.gameSelected].teamA} VS {this.props.games[this.state.gameSelected].teamB}</ModalHeader>
+              <ModalBody>
+                <FormGroup tag="fieldset" onChange={this.changeVoteDirection.bind(this)}>
+                  <legend>Predict winning team is:</legend>
+                  {this.state.formWarning && (<Alert color="warning"> pick a team below </Alert>)}
+                  <FormGroup check>
+                    <Label check>
+                      <Input type="radio" value={1} name="direction" />{' '}
+                      {this.props.games[this.state.gameSelected].teamA}
+                    </Label>
+                  </FormGroup>
+                  <FormGroup check>
+                    <Label check>
+                      <Input type="radio" value={2} name="direction" />{' '}
+                      Draw
                       </Label>
+                  </FormGroup>
+                  <FormGroup check>
+                    <Label check>
+                      <Input type="radio" value={3} name="direction" />{' '}
+                      {this.props.games[this.state.gameSelected].teamB}
+                    </Label>
+                  </FormGroup>
                 </FormGroup>
-                <FormGroup check>
-                  <Label check>
-                    <Input type="radio" value={3} name="direction" />{' '}
-                    {this.props.games[this.state.gameSelected].teamB}
-                  </Label>
+                <FormGroup>
+                  <Label for="exampleNumber">Vote size in Eth:</Label>
+                  <Row>
+                    <Col xs="3">
+                      <Input type="number" onChange={this.changeVoteSize.bind(this)} value={this.state.inputVoteSize} placeholder={this.state.inputVoteSize} />
+                    </Col>
+                    <Col xs="auto">
+                      <Button onClick={this.changeVoteSize.bind(this)} value="0.001" color="info">0.001</Button>{' '}
+                      <Button onClick={this.changeVoteSize.bind(this)} value="0.01" color="info">0.01</Button>{' '}
+                      <Button onClick={this.changeVoteSize.bind(this)} value="0.1" color="info">0.1</Button>{' '}
+                      <Button onClick={this.changeVoteSize.bind(this)} value="1" color="info">1</Button>{' '}
+                    </Col>
+                  </Row>
                 </FormGroup>
-              </FormGroup>
-              <FormGroup>
-                <Label for="exampleNumber">Vote size in Eth:</Label>
-                <Row>
-                  <Col xs="3">
-                    <Input type="number" onChange={this.changeVoteSize.bind(this)} value={this.state.inputVoteSize} placeholder={this.state.inputVoteSize} />
-                  </Col>
-                  <Col xs="auto">
-                    <Button onClick={this.changeVoteSize.bind(this)} value="0.001" color="info">0.001</Button>{' '}
-                    <Button onClick={this.changeVoteSize.bind(this)} value="0.01" color="info">0.01</Button>{' '}
-                    <Button onClick={this.changeVoteSize.bind(this)} value="0.1" color="info">0.1</Button>{' '}
-                    <Button onClick={this.changeVoteSize.bind(this)} value="1" color="info">1</Button>{' '}
-                  </Col>
-                </Row>
-              </FormGroup>
-              For a profit of: {this.state.profit}
-            </ModalBody>
-            <ModalFooter>
-              <Button color="primary" onClick={this.vote.bind(this)}>Vote</Button>{' '}
-              <Button color="secondary" onClick={this.toggle}>Cancel</Button>
-            </ModalFooter>
-          </Modal>
-        }
+                For a profit of: {this.state.profit}
+              </ModalBody>
+              <ModalFooter>
+                <Button color="primary" onClick={this.vote.bind(this)}>Vote</Button>{' '}
+                <Button color="secondary" onClick={this.toggle}>Cancel</Button>
+              </ModalFooter>
+            </Modal>
+        )}
       </div>
     )
   }
