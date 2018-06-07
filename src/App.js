@@ -62,7 +62,8 @@ class App extends Component {
 
   instantiateContract() {
     const adminAccounts = [
-      '0x627306090abab3a6e1400e9345bc60c78a8bef57'
+      '0x627306090abab3a6e1400e9345bc60c78a8bef57',
+      '0x8d012fa42370add6268b547d955eef603c89821a'
     ]
 
     const contract = require('truffle-contract')

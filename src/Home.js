@@ -14,8 +14,13 @@ class Home extends Component {
             <Alert color="warning">
               You need metamask to play this game.
               </Alert>
-          )}
-        <GameBoard fetchInProgress={this.props.fetchInProgress} games={this.props.games} />
+          )
+        }
+        {
+          this.props.extensionAvail && (
+            <GameBoard fetchInProgress={this.props.fetchInProgress} games={this.props.games} />
+          )
+        }
       </div>
     )
   }
