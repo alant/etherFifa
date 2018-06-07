@@ -9,6 +9,9 @@ class Home extends Component {
   render() {
     return (
       <div>
+        <Alert color="info">
+          Alpha testing phase on Ropsten testnet. Make sure you choose Ropsten network in your Metamask extension. This is a FIFA 2018 prediction market, win Ether from the other sides when your prediction is correct. Winning is propotionally distributed. There is a 1% fee when withdrawing your prediction winning. If you need Ropsten Ether to test this DApp, leave a message in Discord.
+        </Alert>
         {
           !this.props.extensionAvail && (
             <Alert color="warning">
