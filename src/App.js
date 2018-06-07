@@ -80,7 +80,7 @@ class App extends Component {
         // console.log("account[0]: " + account + "type: " + typeof(account))
         if (adminAccounts.includes(account)) {
           console.log("== ! setting isAdmin true ! ==")
-          this.setState({isAdmin: true})
+          this.setState({ isAdmin: true })
         }
         // console.log("= app.js gameCoutn: " + result)
       })
@@ -195,6 +195,11 @@ class App extends Component {
                     </NavItem>
                   )
                 }
+                <NavItem>
+                  <NavLink href="https://discord.gg/WCRnW7r" target="_blank">
+                    Discord
+                  </NavLink>
+                </NavItem>
                 <NavItem>
                   <NavLink href="/about">
                     About
