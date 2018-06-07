@@ -4,7 +4,7 @@ import GameBoard from "./GameBoard";
 
 class Home extends Component {
   componentWillMount() {
-    console.log("= home prop extension avail:" + this.props.extensionAvail);
+    // console.log("= home prop extension avail:" + this.props.extensionAvail);
   }
   render() {
     return (

@@ -123,7 +123,7 @@ class GameCards extends Component {
     this.setState({ directionSelected: event.target.value }, this.calculateProfit.bind(this))
   }
   calculateProfit() {
-    console.log("= calculating profit: direction:" + this.state.directionSelected + " game: " + this.state.gameSelected + " vote size: " + this.state.inputVoteSize)
+    // console.log("= calculating profit: direction:" + this.state.directionSelected + " game: " + this.state.gameSelected + " vote size: " + this.state.inputVoteSize)
     var _profit = 0.0
     var _totalWin = 0.0
     var _direction = parseInt(this.state.directionSelected, 10)
@@ -143,7 +143,7 @@ class GameCards extends Component {
       default:
         _profit = 0
     }
-    console.log("= profit: " + _profit)
+    // console.log("= profit: " + _profit)
     this.setState({ profit: _profit })
   }
   vote() {
@@ -163,13 +163,14 @@ class GameCards extends Component {
           return _instance.canVote(0, { from: defaultAccount })
         }).then((result) => {
           if (result === true) {
-            console.log("=== call castVote ===")
+            // console.log("=== call castVote ===")
             return contractInstance.castVote(this.state.gameSelected, this.state.directionSelected, { from: defaultAccount, value: this.state.web3.toWei(this.state.inputVoteSize, "ether") })
           } else {
             console.log("vote: canVote?: " + result + " type: " + typeof (result))
           }
         }).then((result) => {
-          console.log("castVote result: " + JSON.stringify(result))
+          // console.log("castVote result: " + JSON.stringify(result))
+          this.toggle()
         })
       })
     }

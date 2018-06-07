@@ -6,7 +6,7 @@ import GameCards from './GameCards'
 
 class GameBoard extends Component {
   render() {
-    console.log("= games prop: " + JSON.stringify(this.props.games))
+    // console.log("= games prop: " + JSON.stringify(this.props.games))
     return (
       <div>
         {

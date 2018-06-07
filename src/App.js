@@ -77,12 +77,12 @@ class App extends Component {
       }).then((result) => {
         this.setState({ gameCount: result });
         var account = accounts[0]
-        console.log("account[0]: " + account + "type: " + typeof(account))
+        // console.log("account[0]: " + account + "type: " + typeof(account))
         if (adminAccounts.includes(account)) {
           console.log("== ! setting isAdmin true ! ==")
           this.setState({isAdmin: true})
         }
-        console.log("= app.js gameCoutn: " + result)
+        // console.log("= app.js gameCoutn: " + result)
       })
     })
     let contractInstance
@@ -109,7 +109,7 @@ class App extends Component {
           Promise.all(innerPromise).then((result) => {
             // console.log(result)
             result.forEach((_game) => {
-              console.log("== game: " + _game)
+              // console.log("== game: " + _game)
               var game = {
                 teamA: _game[0],
                 teamB: _game[1],
