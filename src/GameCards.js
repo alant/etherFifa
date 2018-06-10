@@ -170,7 +170,7 @@ class GameCards extends Component {
           }
         }).then((result) => {
           // console.log("castVote result: " + JSON.stringify(result))
-          this.toggle()
+          // this.toggle()
         })
       })
     }
