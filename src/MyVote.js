@@ -92,13 +92,14 @@ class MyVote extends Component {
           promises2.push(contractInstance.getDeposit(i, accounts[0], { from: accounts[0] }))
         }
         Promise.all(promises1).then((result) => {
+          console.log("!= getWinning: " + JSON.stringify(result))
           var valInEther = result.map(valInWei => this.state.web3.fromWei(valInWei, "ether"))
           this.setState({
             winnings: valInEther
           })
         })
         Promise.all(promises2).then((result) => {
-          // console.log("!= getdeposit: " + JSON.stringify(result))
+          console.log("!= getdeposit: " + JSON.stringify(result))
           var valInEther = result.map(valInWei => this.state.web3.fromWei(valInWei, "ether"))
           this.setState({
             deposits: valInEther,
@@ -138,7 +139,7 @@ class MyVote extends Component {
                   (() => {
                     if (parseFloat(this.state.winnings[i]) > 0) {
                       return (
-                        < Button disabled color="primary" onClick={this.withdraw.bind(this, i)}>
+                        < Button color="primary" onClick={this.withdraw.bind(this, i)}>
                           Withdraw
                         </Button>
                       )
@@ -162,6 +163,7 @@ class MyVote extends Component {
         {
           this.state.metaMaskUnlocked ?
             <div>
+              {this.state.fetchInProgress && <p> Loading from Etherum blockchain network... </p>}
               <Table>
                 <thead>
                   <tr>

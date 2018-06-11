@@ -9,10 +9,12 @@ contract FifaWorldCup is DateTime, Ownable{
     require(canVote(_gameId));
     _;
   }
+
   struct Vote {
     uint256 deposit;
     uint8 vote;
   }
+
   struct Game {
     string teamA;
     string teamB;
@@ -24,6 +26,13 @@ contract FifaWorldCup is DateTime, Ownable{
     uint8 result;
     mapping(address => Vote) votes;
   }
+
+  event Deposit(
+    address indexed _from,
+    uint16 _gameId,
+    uint8 _direction,
+    uint _value
+  );
 
   mapping (uint16 => Game) games;
   uint16 gameCount;
@@ -96,6 +105,8 @@ contract FifaWorldCup is DateTime, Ownable{
       games[_gameId].lose += msg.value;
     }
     games[_gameId].voteCount++;
+
+    emit Deposit(msg.sender, _gameId, _direction, msg.value);
   }
   function getDeposit(uint16 _gameId, address _voter) view public returns (uint256) {
     Game storage game = games[_gameId];
@@ -111,39 +122,49 @@ contract FifaWorldCup is DateTime, Ownable{
     uint256 winning;
     Game storage game = games[_gameId];
     Vote storage myVote = game.votes[_voter];
-    if (game.result == 0 || game.result != myVote.vote) {
+    if (game.result == 0)
       return 0;
-    } 
-    
+    if (game.result != myVote.vote)
+      return 0;
     uint256 pot;
+    uint base = 10 ** 9;
+    uint fraction;
+    
     if (myVote.vote == 1) {
       pot = pot.add(game.draw);
       pot = pot.add(game.lose);
-      winning = pot.mul(myVote.deposit.div(game.win));
     } else if (myVote.vote == 2) {
       pot = pot.add(game.win);
       pot = pot.add(game.lose);
-      winning = pot.mul(myVote.deposit.div(game.draw));
     } else if (myVote.vote == 3) {
       pot = pot.add(game.win);
       pot = pot.add(game.draw);
-      winning = pot.mul(myVote.deposit.div(game.lose));
     }
+
+    fraction = (myVote.deposit.mul(base)).div(pot);
+    winning = (pot.mul(fraction)).div(base);
     winning = winning.add(myVote.deposit);
     return winning;
   }
 
-  function withdraw(uint16 _gameId) public {
+  function withdraw(uint16 _gameId) public returns(uint) {
     Game storage game = games[_gameId];
     Vote storage myVote = game.votes[msg.sender];
-    require(game.result != 0);
-    require(game.result == myVote.vote);
-    myVote.vote = 0;
     uint256 winning = getWinning(_gameId, msg.sender);
-    uint256 winning1Percent = winning.div(100);
+
+    if (winning <= 0) 
+      return 0;
+    if (game.result == 0)
+      return 0;
+    if (game.result != myVote.vote)
+      return 0;
+
+    uint256 winning1Percent = winning / 100;
     researchPot = researchPot.add(winning1Percent);
     uint256 winning99Percent = winning1Percent.mul(99);
+    myVote.vote = 0;
     msg.sender.transfer(winning99Percent);
+    return winning99Percent;
   }
   function canWithDraw(uint16 _gameId) view public returns(bool) {
     Game storage game = games[_gameId];
