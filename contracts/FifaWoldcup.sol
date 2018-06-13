@@ -24,6 +24,7 @@ contract FifaWorldCup is DateTime, Ownable{
     uint256 draw;
     uint256 lose;
     uint8 result;
+    bool canVote;
     mapping(address => Vote) votes;
   }
 
@@ -46,10 +47,15 @@ contract FifaWorldCup is DateTime, Ownable{
     delay = _delay;
   }
   function canVote(uint16 _gameId) public view returns (bool) {
-    //add 15 mins to the startTime
-    return now < (games[_gameId].startTime + delay);
+    if (games[_gameId].canVote == false) {
+      return false;
+    } else {
+      return now < (games[_gameId].startTime + delay);
+    }
   }
-  
+  function setCanVote(uint16 _gameId, bool _canVote) public onlyOwner {
+    games[_gameId].canVote = _canVote;
+  }
   function getGameCount() public view returns (uint16) {
     return gameCount;
   }
@@ -85,6 +91,7 @@ contract FifaWorldCup is DateTime, Ownable{
     games[gameCount].teamA = _teamA;
     games[gameCount].teamB = _teamB;
     games[gameCount].startTime = _startTime;
+    games[gameCount].canVote = true;
     gameCount++;
   }
 
