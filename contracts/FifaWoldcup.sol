@@ -4,7 +4,7 @@ import "./Ownable.sol";
 
 contract FifaWorldCup is Ownable{
   using SafeMath for uint256;
-  modifier onlyNotFinished(uint16 _gameId) {
+  modifier onlyNotFinished(uint8 _gameId) {
     require(canVote(_gameId));
     _;
   }
@@ -34,52 +34,51 @@ contract FifaWorldCup is Ownable{
     uint _value
   );
 
-  mapping (uint16 => Game) games;
-  uint16 gameCount;
-  uint delay = 0;
+  mapping (uint8 => Game) games;
+  uint8 gameCount;
   uint256 researchPot;
 
   constructor() public {
     // matchDay = 1528988400;
+    gameCount = 0;
+    researchPot = 0;
   }
-  function setDelay(uint _delay) public onlyOwner {
-    delay = _delay;
-  }
-  function canVote(uint16 _gameId) public view returns (bool) {
+
+  function canVote(uint8 _gameId) public view returns (bool) {
     if (games[_gameId].canVote == false) {
       return false;
     } else {
-      return now < (games[_gameId].startTime + delay);
+      return now < games[_gameId].startTime;
     }
   }
-  function setCanVote(uint16 _gameId, bool _canVote) public onlyOwner {
+  function setCanVote(uint8 _gameId, bool _canVote) public onlyOwner {
     games[_gameId].canVote = _canVote;
   }
   function getGameCount() public view returns (uint16) {
     return gameCount;
   }
-  function getTeamA(uint16 _gameId) public view returns (string) {
+  function getTeamA(uint8 _gameId) public view returns (string) {
     return games[_gameId].teamA;
   }
-  function getTeamB(uint16 _gameId) public view returns (string) {
+  function getTeamB(uint8 _gameId) public view returns (string) {
     return games[_gameId].teamB;
   }
-  function getStartTime(uint16 _gameId) public view returns (uint) {
+  function getStartTime(uint8 _gameId) public view returns (uint) {
     return games[_gameId].startTime;
   }
-  function setStartTime(uint16 _gameId, uint _startTime) public onlyOwner {
+  function setStartTime(uint8 _gameId, uint _startTime) public onlyOwner {
     games[_gameId].startTime = _startTime;
   }
-  function getWinVote(uint16 _gameId) public view returns (uint) {
+  function getWinVote(uint8 _gameId) public view returns (uint) {
     return games[_gameId].win;
   }
-  function getDrawVote(uint16 _gameId) public view returns (uint) {
+  function getDrawVote(uint8 _gameId) public view returns (uint) {
     return games[_gameId].draw;
   }
-  function getLoseVote(uint16 _gameId) public view returns (uint) {
+  function getLoseVote(uint8 _gameId) public view returns (uint) {
     return games[_gameId].lose;
   }
-  function setResult(uint16 _gameId, uint8 _result) public onlyOwner {
+  function setResult(uint8 _gameId, uint8 _result) public onlyOwner {
     games[_gameId].result = _result;
   }
   function getResearchPot() public view onlyOwner returns (uint256) {
@@ -87,14 +86,12 @@ contract FifaWorldCup is Ownable{
   }
 
   function addGame(string _teamA, string _teamB, uint _startTime) public onlyOwner {
-    games[gameCount].teamA = _teamA;
-    games[gameCount].teamB = _teamB;
-    games[gameCount].startTime = _startTime;
-    games[gameCount].canVote = true;
+    require(gameCount < 256);
+    games[gameCount] = Game(_teamA, _teamB, _startTime, 0, 0, 0, 0, 0, true);
     gameCount++;
   }
 
-  function castVote(uint16 _gameId, uint8 _direction) public payable onlyNotFinished(_gameId) {
+  function castVote(uint8 _gameId, uint8 _direction) public payable onlyNotFinished(_gameId) {
     require(_direction > 0 && _direction < 4);
     Game storage game = games[_gameId];
     Vote storage myVote = game.votes[msg.sender];
@@ -114,17 +111,17 @@ contract FifaWorldCup is Ownable{
 
     emit Deposit(msg.sender, _gameId, _direction, msg.value);
   }
-  function getDeposit(uint16 _gameId, address _voter) view public returns (uint256) {
+  function getDeposit(uint8 _gameId, address _voter) view public returns (uint256) {
     Game storage game = games[_gameId];
     Vote storage myVote = game.votes[_voter];
     return myVote.deposit;
   }
-  function getVote(uint16 _gameId, address _voter) view public returns (uint8) {
+  function getVote(uint8 _gameId, address _voter) view public returns (uint8) {
     Game storage game = games[_gameId];
     Vote storage myVote = game.votes[_voter];
     return myVote.vote;
   }
-  function getWinning(uint16 _gameId, address _voter) view public returns (uint256) {
+  function getWinning(uint8 _gameId, address _voter) view public returns (uint256) {
     uint256 winning;
     Game storage game = games[_gameId];
     Vote storage myVote = game.votes[_voter];
@@ -153,7 +150,7 @@ contract FifaWorldCup is Ownable{
     return winning;
   }
 
-  function withdraw(uint16 _gameId) public returns(uint) {
+  function withdraw(uint8 _gameId) public returns(uint) {
     Game storage game = games[_gameId];
     Vote storage myVote = game.votes[msg.sender];
     uint256 winning = getWinning(_gameId, msg.sender);
@@ -172,7 +169,7 @@ contract FifaWorldCup is Ownable{
     msg.sender.transfer(winning99Percent);
     return winning99Percent;
   }
-  function canWithDraw(uint16 _gameId) view public returns(bool) {
+  function canWithDraw(uint8 _gameId) view public returns(bool) {
     Game storage game = games[_gameId];
     Vote storage myVote = game.votes[msg.sender];
     if (game.result == 0) {

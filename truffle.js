@@ -22,6 +22,17 @@ module.exports = {
       port: 8545,
       network_id: "*" // Match any network id
     },
+    live: {
+      provider: function() {
+        return new HDWalletProvider(
+          mnemonic,
+          "https://mainnet.infura.io/8Q30zi3TAqlJ6JSCwcul"
+        );
+      },
+      network_id: 1,
+      gas: 5000000,
+      gasPrice: 8000000000
+    },
     mainnet: {
       host: "localhost",
       network_id: 1,
