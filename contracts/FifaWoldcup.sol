@@ -1,9 +1,8 @@
 pragma solidity ^0.4.21;
 
-import "./DateTime.sol";
 import "./Ownable.sol";
 
-contract FifaWorldCup is DateTime, Ownable{
+contract FifaWorldCup is Ownable{
   using SafeMath for uint256;
   modifier onlyNotFinished(uint16 _gameId) {
     require(canVote(_gameId));
