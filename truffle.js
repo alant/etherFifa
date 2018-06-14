@@ -30,8 +30,8 @@ module.exports = {
         );
       },
       network_id: 1,
-      gas: 5000000,
-      gasPrice: 8000000000
+      gas: 3500000,
+      gasPrice: 3000000000
     },
     mainnet: {
       host: "localhost",

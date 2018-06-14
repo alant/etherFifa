@@ -92,7 +92,7 @@ class App extends Component {
         contractInstance = _instance;
         return _instance.getGameCount({ from: accounts[0] })
       }).then((result) => {
-        // console.log("= GameBoard: getGameCount: " + result);
+        console.log("= GameBoard: getGameCount: " + result);
         this.setState({ gameCount: result })
         for (let i = 0; i < result; i++) {
           var innerRequests = [
@@ -107,9 +107,9 @@ class App extends Component {
         }
         Promise.all(promises).then((innerPromise) => {
           Promise.all(innerPromise).then((result) => {
-            // console.log(result)
+            console.log(result)
             result.forEach((_game) => {
-              // console.log("== game: " + _game)
+              console.log("== game: " + _game)
               var game = {
                 teamA: _game[0],
                 teamB: _game[1],

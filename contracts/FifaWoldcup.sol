@@ -87,7 +87,10 @@ contract FifaWorldCup is Ownable{
 
   function addGame(string _teamA, string _teamB, uint _startTime) public onlyOwner {
     require(gameCount < 256);
-    games[gameCount] = Game(_teamA, _teamB, _startTime, 0, 0, 0, 0, 0, true);
+    games[gameCount].teamA = _teamA;
+    games[gameCount].teamB = _teamB;
+    games[gameCount].startTime = _startTime;
+    games[gameCount].canVote = true;
     gameCount++;
   }
 
