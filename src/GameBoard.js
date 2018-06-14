@@ -14,7 +14,7 @@ class GameBoard extends Component {
             <p> Loading from Etherum blockchain network... </p>
             :
             <Container>
-              <GameCards games={this.props.games} mode={this.props.mode} />
+              <GameCards games={this.props.games} mode={this.props.mode} gameCount={this.props.gameCount}/>
             </Container>
         }
       </div>

@@ -15,3 +15,32 @@
 .gameCard:hover::after {
   opacity: 1;
 }
+
+.national-flag {
+  height: 48px;
+  width: 48px;
+}
+
+.card-top-row {
+  display: inline-block;
+  font: bold;
+}
+
+.left-team {
+  display: inline-block;
+  margin: 0 15px 10px 0;
+}
+.vs-text-container {
+  display: inline-block;
+}
+.right-team {
+  display: inline-block;
+  margin: 0 0 10px 15px;
+}
+
+.flag-container-a {
+  display: inline-block;
+}
+.flag-container-b {
+  display: inline-block;
+}

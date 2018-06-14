@@ -92,7 +92,7 @@ class App extends Component {
         contractInstance = _instance;
         return _instance.getGameCount({ from: accounts[0] })
       }).then((result) => {
-        console.log("= GameBoard: getGameCount: " + result);
+        // console.log("= GameBoard: getGameCount: " + result);
         this.setState({ gameCount: result })
         for (let i = 0; i < result; i++) {
           var innerRequests = [
@@ -107,16 +107,18 @@ class App extends Component {
         }
         Promise.all(promises).then((innerPromise) => {
           Promise.all(innerPromise).then((result) => {
-            console.log(result)
-            result.forEach((_game) => {
-              console.log("== game: " + _game)
+            // console.log(JSON.parse(result)
+            result.forEach((_game, i) => {
+              // console.log("== game: " + _game)
               var game = {
                 teamA: _game[0],
                 teamB: _game[1],
                 startTime: _game[2],
                 win: this.state.web3.fromWei(_game[3], 'ether'),
                 draw: this.state.web3.fromWei(_game[4], 'ether'),
-                lose: this.state.web3.fromWei(_game[5], 'ether')
+                lose: this.state.web3.fromWei(_game[5], 'ether'),
+                imagePathA: './imgs/' + _game[0].trim().toLowerCase().substring(0,3) + '.png',
+                imagePathB: './imgs/' + _game[1].trim().toLowerCase().substring(0,3) + '.png'
               }
               this.state.games.push(game)
             })
@@ -134,6 +136,7 @@ class App extends Component {
           extensionAvail={this.state.web3Avail}
           fetchInProgress={this.state.fetchInProgress}
           games={this.state.games}
+          gameCount={this.state.gameCount}
           {...props}
         />
       );

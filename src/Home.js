@@ -10,7 +10,7 @@ class Home extends Component {
     return (
       <div>
         <Alert color="info">
-          This is a FIFA 2018 prediction market, win Ether from others who made the wrong predictions when your prediction is correct. Winning is propotionally distributed. There is a 1% fee when withdrawing your prediction winning. Leave a message in Discord if you have question / feedback.
+          This is a FIFA 2018 prediction market, win Ether from others when your prediction is correct. Winning is propotionally distributed. There is a 1% fee when withdrawing your prediction winning. Leave a message in Discord if you have question / feedback.
         </Alert>
         {
           !this.props.extensionAvail && (
@@ -21,7 +21,7 @@ class Home extends Component {
         }
         {
           this.props.extensionAvail && (
-            <GameBoard fetchInProgress={this.props.fetchInProgress} games={this.props.games} />
+            <GameBoard fetchInProgress={this.props.fetchInProgress} games={this.props.games} gameCount={this.props.gameCount}/>
           )
         }
       </div>
