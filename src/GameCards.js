@@ -5,7 +5,6 @@ import {
   Row,
   Card,
   CardBody,
-  CardTitle,
   CardSubtitle,
   CardText,
   Modal,

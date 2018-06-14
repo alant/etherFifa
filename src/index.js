@@ -1,12 +1,13 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import App from './App'
-import 'bootstrap/dist/css/bootstrap.css';
-import { BrowserRouter, Route } from 'react-router-dom';
-import ReactGA from 'react-ga';
-import PropTypes from 'prop-types';
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+import "bootstrap/dist/css/bootstrap.css";
+import { BrowserRouter, Route } from "react-router-dom";
+import ReactGA from "react-ga";
+import PropTypes from "prop-types";
+import { CookiesProvider } from "react-cookie";
 
-ReactGA.initialize('UA-120518360-1');
+ReactGA.initialize("UA-120518360-1");
 
 class GAListener extends React.Component {
   static contextTypes = {
@@ -28,11 +29,13 @@ class GAListener extends React.Component {
   }
 }
 
-ReactDOM.render((
+ReactDOM.render(
   <BrowserRouter>
     <GAListener>
-      <Route component={App} />
+      <CookiesProvider>
+        <Route component={App} />
+      </CookiesProvider>
     </GAListener>
-  </BrowserRouter>
-), document.getElementById('root')
+  </BrowserRouter>,
+  document.getElementById("root")
 );

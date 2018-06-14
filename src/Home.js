@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Alert } from "reactstrap";
 import GameBoard from "./GameBoard";
+import { FormattedMessage } from "react-intl";
 
 class Home extends Component {
   componentWillMount() {
@@ -10,7 +11,11 @@ class Home extends Component {
     return (
       <div>
         <Alert color="info">
-          This is a FIFA 2018 prediction market, win Ether from others when your prediction is correct. Winning is propotionally distributed. There is a 1% fee when withdrawing your prediction winning. Leave a message in Discord if you have question / feedback.
+          <FormattedMessage
+            id="app.intro"
+            defaultMessage="This is a FIFA 2018 prediction market, win Ether from others when your prediction is correct. Winning is propotionally distributed. There is a 1% fee when withdrawing your prediction winning. Leave a message in Discord if you have question / feedback."
+            description="intro of prediction market"
+          />
         </Alert>
         {
           !this.props.extensionAvail && (

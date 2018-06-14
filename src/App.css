@@ -44,3 +44,9 @@
 .flag-container-b {
   display: inline-block;
 }
+footer {
+  margin-bottom: 10px;
+}
+.contact-row {
+  margin-bottom: 50px;
+}
