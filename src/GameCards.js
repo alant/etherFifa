@@ -21,6 +21,7 @@ import {
 import DatePicker from "react-datepicker";
 import styled from "styled-components";
 import moment from "moment";
+import { FormattedMessage } from "react-intl";
 
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -189,10 +190,12 @@ class GameCards extends Component {
           .then(_instance => {
             contractInstance = _instance;
             defaultAccount = accounts[0];
-            return _instance.canVote(this.state.gameSelected, { from: defaultAccount });
+            return _instance.canVote(this.state.gameSelected, {
+              from: defaultAccount
+            });
           })
           .then(result => {
-            console.log("= vote result: " + result)
+            console.log("= vote result: " + result);
             if (result === true) {
               // console.log("=== call castVote ===")
               return contractInstance.castVote(
@@ -360,18 +363,23 @@ class GameCards extends Component {
                     <div className="card-top-row">
                       <div className="left-team">
                         <FlagImgA Index={i} />
-                        {game.teamA}
+                        <FormattedMessage id={"team." + i + ".a"} />
                       </div>
                       <div className="vs-text-container">VS</div>
                       <div className="right-team">
-                        {game.teamB} <FlagImgB Index={i} />
+                        <FormattedMessage id={"team." + i + ".b"} />
+                        <FlagImgB Index={i} />
                       </div>
                     </div>
                     <CardSubtitle>
                       Predict before: {timeConverter(game.startTime)}
                     </CardSubtitle>
                     <CardText>
-                      Total pot: {JSON.parse(game.win) + JSON.parse(game.draw) + JSON.parse(game.lose)} ETH
+                      Total pot:{" "}
+                      {JSON.parse(game.win) +
+                        JSON.parse(game.draw) +
+                        JSON.parse(game.lose)}{" "}
+                      ETH
                     </CardText>
                   </CardBody>
                 </Card>
@@ -444,38 +452,69 @@ class GameCards extends Component {
               className={this.props.className}
             >
               <ModalHeader toggle={this.toggle}>
-                {this.props.games[this.state.gameSelected].teamA} VS{" "}
-                {this.props.games[this.state.gameSelected].teamB}
+                {
+                  <FormattedMessage
+                    id={"team." + this.state.gameSelected + ".a"}
+                  />
+                }{" "}
+                VS{" "}
+                {
+                  <FormattedMessage
+                    id={"team." + this.state.gameSelected + ".b"}
+                  />
+                }
               </ModalHeader>
               <ModalBody>
                 <FormGroup
                   tag="fieldset"
                   onChange={this.changeVoteDirection.bind(this)}
                 >
-                  <legend>Predict winning team is:</legend>
+                  <legend>
+                    <FormattedMessage
+                      id="app.predictPrompt"
+                      defaultMessage="Predict winning team is:"
+                    />
+                  </legend>
                   {this.state.formWarning && (
                     <Alert color="warning"> pick a team below </Alert>
                   )}
                   <FormGroup check>
                     <Label check>
                       <Input type="radio" value={1} name="direction" />{" "}
-                      {this.props.games[this.state.gameSelected].teamA}
+                      {
+                        <FormattedMessage
+                          id={"team." + this.state.gameSelected + ".a"}
+                        />
+                      }
                     </Label>
                   </FormGroup>
                   <FormGroup check>
                     <Label check>
-                      <Input type="radio" value={2} name="direction" /> Draw
+                      <Input type="radio" value={2} name="direction" />{" "}
+                      <FormattedMessage
+                        id="app.draw"
+                        defaultMessage="Draw"
+                      />
                     </Label>
                   </FormGroup>
                   <FormGroup check>
                     <Label check>
                       <Input type="radio" value={3} name="direction" />{" "}
-                      {this.props.games[this.state.gameSelected].teamB}
+                      {
+                        <FormattedMessage
+                          id={"team." + this.state.gameSelected + ".b"}
+                        />
+                      }
                     </Label>
                   </FormGroup>
                 </FormGroup>
                 <FormGroup>
-                  <Label for="exampleNumber">Vote size in Eth:</Label>
+                  <Label for="exampleNumber">                     
+                  <FormattedMessage
+                        id="app.voteSizePrompt"
+                        defaultMessage="Vote size in Eth:"
+                      />
+                      </Label>
                   <Row>
                     <Col xs="3">
                       <Input
@@ -517,14 +556,26 @@ class GameCards extends Component {
                     </Col>
                   </Row>
                 </FormGroup>
-                For a profit of: {this.state.profit}
+                 <FormattedMessage
+                        id="app.profitPrompt"
+                        defaultMessage="For a profit of: "
+                      />
+                {this.state.profit}
               </ModalBody>
               <ModalFooter>
                 <Button color="primary" onClick={this.vote.bind(this)}>
-                  Vote
+                  <FormattedMessage
+                        id="app.vote"
+                        defaultMessage="Vote"
+                      />
+                  
                 </Button>{" "}
                 <Button color="secondary" onClick={this.toggle}>
-                  Cancel
+                  <FormattedMessage
+                        id="app.cancel"
+                        defaultMessage="Cancel"
+                      />
+                  
                 </Button>
               </ModalFooter>
             </Modal>

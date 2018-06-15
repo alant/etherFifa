@@ -1,4 +1,22 @@
 {
-    "app.aboutDetail": "Vote with your Eth and win Eth on teams you believe in!",
-    "app.locale": "English"
+  "app.aboutDetail": "Vote with your Eth and win Eth on teams you believe in!",
+  "app.locale": "English",
+  "team.0.a": "Russia",
+  "team.0.b": "Saudi Arabia",
+  "team.1.a": "Egypt",
+  "team.2.a": "Morocco",
+  "team.3.a": "Portugal",
+  "team.4.a": "France",
+  "team.5.a": "Argentina",
+  "team.6.a": "Peru",
+  "team.7.a": "Croatia",
+  "team.8.a": "Costa Rica",
+  "team.1.b": "Uruguay",
+  "team.2.b": "Iran",
+  "team.3.b": "Spain",
+  "team.4.b": "Australia",
+  "team.5.b": "Iceland",
+  "team.6.b": "Denmark",
+  "team.7.b": "Nigeria",
+  "team.8.b": "Serbia"
 }

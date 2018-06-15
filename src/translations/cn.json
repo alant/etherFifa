@@ -1,10 +1,35 @@
 {
-    "app.aboutDetail": "这是一个基于以太坊区块链的预测市场。 所有的信息均在链上。合约地址为：0xc3a1D2dFEE2229893CaBf9d4ee0Fb9d6AfB963b5。保证了预测市场的公开与公平。",
-    "app.locale": "中文",
-    "app.intro": "欢迎来到世界杯预测市场，这是一个基于以太坊的应用。因此需要 Metamask 插件才能玩。所有的信息都在链上，因此这个预测市场是公开公平的。",
-    "app.myvote": "我的预测",
-    "app.about": "关于",
-    "app.contact": "联系",
-    "app.contactMsg": "常联系"
-
+  "app.aboutDetail":
+    "这是一个基于以太坊区块链的预测市场。 所有的信息均在链上。合约地址为：0xc3a1D2dFEE2229893CaBf9d4ee0Fb9d6AfB963b5。保证了预测市场的公开与公平。",
+  "app.locale": "中文",
+  "app.intro":
+    "欢迎来到世界杯预测市场，这是一个基于以太坊的应用。因此需要 Metamask 插件才能玩。所有的信息都在链上，因此这个预测市场是公开公平的。",
+  "app.myvote": "我的预测",
+  "app.about": "关于",
+  "app.contact": "联系",
+  "app.contactMsg": "常联系",
+  "team.0.a": "俄罗斯",
+  "team.0.b": "沙特",
+  "team.1.a": "埃及",
+  "team.2.a": "摩洛哥",
+  "team.3.a": "葡萄牙",
+  "team.4.a": "法国",
+  "team.5.a": "阿根廷",
+  "team.6.a": "秘鲁",
+  "team.7.a": "克罗地亚",
+  "team.8.a": "哥斯达黎加",
+  "team.1.b": "乌拉圭",
+  "team.2.b": "伊朗",
+  "team.3.b": "西班牙",
+  "team.4.b": "澳大利亚",
+  "team.5.b": "冰岛",
+  "team.6.b": "丹麦",
+  "team.7.b": "尼日利亚",
+  "team.8.b": "塞尔维亚",
+  "app.predictPrompt": "选择您心中本场的胜利者：",
+  "app.draw": "平局",
+  "app.voteSizePrompt": "投入 ETH 金额：",
+  "app.profitPrompt": "奖金：",
+  "app.vote": "下注",
+  "app.cancel": "取消"
 }
