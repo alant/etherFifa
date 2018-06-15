@@ -154,20 +154,22 @@ class App extends Component {
                   win: this.state.web3.fromWei(_game[3], "ether"),
                   draw: this.state.web3.fromWei(_game[4], "ether"),
                   lose: this.state.web3.fromWei(_game[5], "ether"),
-                  imagePathA:
-                    "./imgs/" +
-                    _game[0]
-                      .trim()
-                      .toLowerCase()
-                      .substring(0, 3) +
-                    ".png",
-                  imagePathB:
-                    "./imgs/" +
-                    _game[1]
-                      .trim()
-                      .toLowerCase()
-                      .substring(0, 3) +
-                    ".png"
+                  imagePathA: _game[0]
+                    ? "./imgs/" +
+                      _game[0]
+                        .trim()
+                        .toLowerCase()
+                        .substring(0, 3) +
+                      ".png"
+                    : "./imgs/rus.png",
+                  imagePathB: _game[1]
+                    ? "./imgs/" +
+                      _game[1]
+                        .trim()
+                        .toLowerCase()
+                        .substring(0, 3) +
+                      ".png"
+                    : "./imgs/rus.png"
                 };
                 this.state.games.push(game);
               });

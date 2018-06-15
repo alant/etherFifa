@@ -13,7 +13,7 @@ class Home extends Component {
         <Alert color="info">
           <FormattedMessage
             id="app.intro"
-            defaultMessage="This is a FIFA 2018 prediction market, win Ether from others when your prediction is correct. Winning is propotionally distributed. There is a 1% fee when withdrawing your prediction winning. Leave a message in Discord if you have question / feedback."
+            defaultMessage="This is a FIFA 2018 prediction market, win Ether from others when your prediction is correct. Winning is propotionally distributed. There is a 1% fee when withdrawing your prediction winning. Leave a message in Discord if you have any questions or feedback."
             description="intro of prediction market"
           />
         </Alert>
