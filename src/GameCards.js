@@ -189,9 +189,10 @@ class GameCards extends Component {
           .then(_instance => {
             contractInstance = _instance;
             defaultAccount = accounts[0];
-            return _instance.canVote(0, { from: defaultAccount });
+            return _instance.canVote(this.state.gameSelected, { from: defaultAccount });
           })
           .then(result => {
+            console.log("= vote result: " + result)
             if (result === true) {
               // console.log("=== call castVote ===")
               return contractInstance.castVote(
