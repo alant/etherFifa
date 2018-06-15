@@ -139,15 +139,17 @@ contract FifaWorldCup is Ownable{
     if (myVote.vote == 1) {
       pot = pot.add(game.draw);
       pot = pot.add(game.lose);
+      fraction = (myVote.deposit.mul(base)).div(game.win);
     } else if (myVote.vote == 2) {
       pot = pot.add(game.win);
       pot = pot.add(game.lose);
+      fraction = (myVote.deposit.mul(base)).div(game.draw);
     } else if (myVote.vote == 3) {
       pot = pot.add(game.win);
       pot = pot.add(game.draw);
+      fraction = (myVote.deposit.mul(base)).div(game.lose);
     }
 
-    fraction = (myVote.deposit.mul(base)).div(pot);
     winning = (pot.mul(fraction)).div(base);
     winning = winning.add(myVote.deposit);
     return winning;
@@ -181,7 +183,6 @@ contract FifaWorldCup is Ownable{
     return (game.result == myVote.vote);
   }
   function getPaid(uint256 amount) public onlyOwner {
-    researchPot = researchPot.sub(amount);
     msg.sender.transfer(amount);
   }
 }

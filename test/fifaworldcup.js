@@ -47,7 +47,7 @@ contract("FifaWorldCup", function(accounts) {
       .then(function(instance) {
         return instance.castVote(0, 2, {
           from: accounts[2],
-          value: 1000000000000000000
+          value: 2000000000000000000
         });
       })
       .then(function(returnValue) {
@@ -59,7 +59,7 @@ contract("FifaWorldCup", function(accounts) {
       .then(function(instance) {
         return instance.castVote(0, 3, {
           from: accounts[3],
-          value: 1000000000000000000
+          value: 2000000000000000000
         });
       })
       .then(function(returnValue) {
