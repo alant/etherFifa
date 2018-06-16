@@ -3,8 +3,7 @@
 // our dependencies
 const express = require("express");
 const fs = require("fs");
-var bodyParser = require('body-parser')
-
+var bodyParser = require("body-parser");
 
 function readData() {
   return new Promise(function(resolve, reject) {
@@ -19,14 +18,17 @@ function readData() {
 var games;
 const app = express();
 // Add headers
-app.use(function (req, res, next) {
-    // Website you wish to allow to connect
-    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
-    res.setHeader('Access-Control-Allow-Origin', 'http://etherfifa.com');
-    // Pass to next layer of middleware
-    next();
+app.use(function(req, res, next) {
+  // Website you wish to allow to connect
+  var allowedOrigins = ["http://localhost:3000", "http://etherfifa.com"];
+  var origin = req.headers.origin;
+  if (allowedOrigins.indexOf(origin) > -1) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  // Pass to next layer of middleware
+  next();
 });
-app.use(bodyParser.urlencoded({ extended: true })); 
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.get("/game", async function(req, res) {
@@ -58,7 +60,7 @@ app.post("/addResult", async function(req, res) {
   try {
     if (!games) {
       games = await readData();
-    }  
+    }
     games.push(_game);
     var json = JSON.stringify(games);
     var fs = require("fs");
