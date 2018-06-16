@@ -109,7 +109,7 @@ class GameCards extends Component {
     var _this = this;
     if (!this.state.showResultModal) {
       axios
-        .get("http://localhost:4000/game", {
+        .get("http://etherfifa.com:4000/game", {
           params: {
             id: this.state.gameSelected
           }
