@@ -37,7 +37,11 @@
   display: inline-block;
   margin: 0 0 10px 15px;
 }
-
+.game-result-modal-body {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
 .flag-container-a {
   display: inline-block;
 }

@@ -22,6 +22,8 @@ import DatePicker from "react-datepicker";
 import styled from "styled-components";
 import moment from "moment";
 import { FormattedMessage } from "react-intl";
+import axios from "axios";
+import ResultCard from "./ResultCard";
 
 import "react-datepicker/dist/react-datepicker.css";
 
@@ -29,7 +31,7 @@ class GameCards extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      gameSelected: 0,
+      gameSelected: null,
       modal: false,
       adminModal: false,
       web3: null,
@@ -39,11 +41,13 @@ class GameCards extends Component {
       directionSelected: 0,
       profit: 0,
       formWarning: false,
-      gameTime: 0
+      gameTime: 0,
+      publicGameResult: {teamA: "", teamB: ""}
     };
     this.adminToggle = this.adminToggle.bind(this);
     this.toggle = this.toggle.bind(this);
     this.handleGameTimeChange = this.handleGameTimeChange.bind(this);
+    this.toggleResultCard = this.toggleResultCard.bind(this);
   }
   componentWillMount() {
     // Get network provider and web3 instance.
@@ -79,7 +83,50 @@ class GameCards extends Component {
   }
   handleClick(i, event) {
     this.setState({ gameSelected: i });
-    this.toggle();
+    const contract = require("truffle-contract");
+    const fifaWorldCup = contract(FifaWorldCupContract);
+    fifaWorldCup.setProvider(this.state.web3.currentProvider);
+
+    this.state.web3.eth.getAccounts((error, accounts) => {
+      fifaWorldCup
+        .deployed()
+        .then(_instance => {
+          return _instance.canVote(this.state.gameSelected, {
+            from: accounts[0]
+          });
+        })
+        .then(result => {
+          // console.log("handleClick: " + result);
+          if (result) {
+            this.toggle();
+          } else {
+            this.toggleResultCard();
+          }
+        });
+    });
+  }
+  toggleResultCard() {
+    var _this = this;
+    if (!this.state.showResultModal) {
+      axios
+        .get("http://localhost:4000/game", {
+          params: {
+            id: this.state.gameSelected
+          }
+        })
+        .then(function(response) {
+          _this.setState(
+            { publicGameResult: response.data },
+            _this.setState({ showResultModal: !_this.state.showResultModal })
+          );
+          // console.log(response);
+        })
+        .catch(function(error) {
+          console.log(error);
+        });
+    } else {
+      _this.setState({ showResultModal: !_this.state.showResultModal })
+    }
   }
   adminHandler(i, event) {
     this.setState({ gameSelected: i });
@@ -491,10 +538,7 @@ class GameCards extends Component {
                   <FormGroup check>
                     <Label check>
                       <Input type="radio" value={2} name="direction" />{" "}
-                      <FormattedMessage
-                        id="app.draw"
-                        defaultMessage="Draw"
-                      />
+                      <FormattedMessage id="app.draw" defaultMessage="Draw" />
                     </Label>
                   </FormGroup>
                   <FormGroup check>
@@ -509,12 +553,12 @@ class GameCards extends Component {
                   </FormGroup>
                 </FormGroup>
                 <FormGroup>
-                  <Label for="exampleNumber">                     
-                  <FormattedMessage
-                        id="app.voteSizePrompt"
-                        defaultMessage="Vote size in Eth:"
-                      />
-                      </Label>
+                  <Label for="exampleNumber">
+                    <FormattedMessage
+                      id="app.voteSizePrompt"
+                      defaultMessage="Vote size in Eth:"
+                    />
+                  </Label>
                   <Row>
                     <Col xs="3">
                       <Input
@@ -556,30 +600,29 @@ class GameCards extends Component {
                     </Col>
                   </Row>
                 </FormGroup>
-                 <FormattedMessage
-                        id="app.profitPrompt"
-                        defaultMessage="For a profit of: "
-                      />
+                <FormattedMessage
+                  id="app.profitPrompt"
+                  defaultMessage="For a profit of: "
+                />
                 {this.state.profit}
               </ModalBody>
               <ModalFooter>
                 <Button color="primary" onClick={this.vote.bind(this)}>
-                  <FormattedMessage
-                        id="app.vote"
-                        defaultMessage="Vote"
-                      />
-                  
+                  <FormattedMessage id="app.vote" defaultMessage="Vote" />
                 </Button>{" "}
                 <Button color="secondary" onClick={this.toggle}>
-                  <FormattedMessage
-                        id="app.cancel"
-                        defaultMessage="Cancel"
-                      />
-                  
+                  <FormattedMessage id="app.cancel" defaultMessage="Cancel" />
                 </Button>
               </ModalFooter>
             </Modal>
           ))}
+        <ResultCard
+          open={this.state.showResultModal}
+          toggle={this.toggleResultCard.bind(this)}
+          gameResult={this.state.publicGameResult}
+          game={this.props.games[this.state.gameSelected]}
+          i={this.state.gameSelected}
+        />
       </div>
     );
   }

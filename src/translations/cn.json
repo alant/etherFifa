@@ -31,5 +31,6 @@
   "app.voteSizePrompt": "投入 ETH 金额：",
   "app.profitPrompt": "奖金：",
   "app.vote": "下注",
-  "app.cancel": "取消"
+  "app.cancel": "取消",
+  "app.gameOverModalTitle": "比赛结果"
 }
