@@ -1,3 +1,5 @@
+"use strict";
+
 // our dependencies
 const express = require("express");
 const fs = require("fs");
